@@ -1,0 +1,104 @@
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap");
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+:root {
+  --color-white: #ffffff;
+  --color-black: #171717;
+  --color-muted: #525252;
+  --color-hover-color: #dfdbdb;
+  --color-page-bg: #f3f3f3;
+}
+
+body {
+  font-family: "Geist", sans-serif;
+  background-color: var(--color-page-bg);
+  color: var(--color-black);
+}
+
+.common-box {
+  display: flex;
+}
+
+.container {
+  margin: 10px;
+  background-color: var(--color-white);
+  padding: 32px;
+  width: 100%;
+  border-radius: 24px;
+}
+
+.sidebar {
+  width: 280px;
+  padding: 20px;
+  height: 100vh;
+}
+.sidebar-header {
+  display: flex;
+  margin-bottom: 42px;
+}
+.sidebar-header .logo {
+  font-size: 24px;
+  margin-right: 8px;
+}
+.sidebar-header .title {
+  font-size: 14px;
+}
+.sidebar-header .title .main-title {
+  font-weight: 600;
+}
+.sidebar-header .title .sub-title {
+  font-weight: 500;
+}
+.sidebar .section-title {
+  font-size: 12px;
+  color: var(--color-muted);
+  font-weight: 600;
+}
+.sidebar .menu {
+  padding: 0;
+  margin: 0;
+  margin-top: 10px;
+}
+.sidebar .menu li a img,
+.sidebar .menu li span img {
+  margin-right: 4px;
+}
+.sidebar .menu li a,
+.sidebar .menu li span {
+  display: flex !important;
+  align-items: center;
+  padding: 7px 7px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.sidebar .menu li a:hover,
+.sidebar .menu li span:hover {
+  background-color: var(--color-hover-color);
+}
+.sidebar .submenu {
+  display: none;
+  list-style: none;
+  padding-left: 15px;
+  margin-top: 0px;
+}
+.sidebar .submenu li {
+  margin: 3px 0;
+}/*# sourceMappingURL=globalstyle.css.map */

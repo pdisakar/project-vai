@@ -1,19 +1,26 @@
   <div class="sidebar">
       <div class="sidebar-header">
           <span class="logo">💻</span>
-          <span class="title">Cyber Cafe<br>Management System</span>
+          <div class="title"> 
+            <div class="main-title">Cyber Cafe</div>
+            <div class="sub-title">Management Systam</div>
+          </div>
       </div>
 
       <div class="sidebar-section">
           <p class="section-title">Platform</p>
           <ul class="menu">
-              <li><a href="index.php">Dashboard</a></li>
+              <li><a href="index.php">
+              <img src='./public/svg/dashboard.svg' alt='Dashboard Icon' class='icon' width="14" height="14"/> 
+              Dashboard</a></li>
               <li class="has-submenu">
-                  <span class="submenu-toggle">Computers</span>
+                  <span class="submenu-toggle">
+                                  <img src='./public/svg/computers.svg' alt='Dashboard Icon' class='icon' width="14" height="14"/> 
+Computers</span>
                   <ul class="submenu">
-                      <li><a href="./computer/computers.php">List</a></li>
-                      <li><a href="./computer/add.php">Add</a></li>
-                      <li><a href="./computer/deleted.php">Deleted</a></li>
+                      <li><a href="./computers.php">List</a></li>
+                      <li><a href="./computersadd.php">Add</a></li>
+                      <li><a href="./computerdeleted.php">Deleted</a></li>
                   </ul>
 
               </li>

@@ -2,7 +2,6 @@
 session_start();
 include("db.php");
 
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $computer_name = $conn->real_escape_string($_POST['computer_name']);
     $brand = $conn->real_escape_string($_POST['brand']);
@@ -15,11 +14,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $keyboard = $conn->real_escape_string($_POST['keyboard']);
     $mouse = $conn->real_escape_string($_POST['mouse']);
     $headphone = $conn->real_escape_string($_POST['headphone']);
-
     $features = isset($_POST['features']) ? implode(", ", $_POST['features']) : "";
 
-    $stmt = $conn->prepare("INSERT INTO computerlist (computer_name, brand, processor, operating_system, ram, storage, screen, graphics, keyboard, mouse, headphone, features) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssssssssssss", $computer_name, $brand, $processor, $operating_system, $ram, $storage, $screen, $graphics, $keyboard, $mouse, $headphone, $features);
+    // Handle image upload
+    $image_name = "";
+    if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
+        $target_dir = "uploads/"; // Make sure this folder exists and is writable
+        $image_name = time() . "_" . basename($_FILES["image"]["name"]);
+        $target_file = $target_dir . $image_name;
+        $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+
+        // Optional: Validate file type
+        $allowed_types = ['jpg', 'jpeg', 'png', 'gif'];
+        if (in_array($imageFileType, $allowed_types)) {
+            move_uploaded_file($_FILES["image"]["tmp_name"], $target_file);
+        } else {
+            echo "<script>alert('Invalid image format! Only JPG, PNG, GIF allowed.');</script>";
+            $image_name = "";
+        }
+    }
+
+    $stmt = $conn->prepare("INSERT INTO computerlist (computer_name, brand, processor, operating_system, ram, storage, screen, graphics, keyboard, mouse, headphone, features, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssssssssssss", $computer_name, $brand, $processor, $operating_system, $ram, $storage, $screen, $graphics, $keyboard, $mouse, $headphone, $features, $image_name);
 
     if ($stmt->execute()) {
         echo "<script>alert('Computer added successfully!'); window.location='computers.php';</script>";
@@ -43,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php include("sidebar.php"); ?>
     <div class="container">
         <h2>Add Computer</h2>
-        <form method="POST" action="">
+        <form method="POST" action="" enctype="multipart/form-data">
             <label>Computer Name:</label>
             <input type="text" name="computer_name" required><br><br>
 
@@ -76,6 +92,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <label>Headphone:</label>
             <input type="text" name="headphone" required><br><br>
+
+            <label>Image:</label>
+            <input type="file" name="image" accept="image/*"><br><br>
 
             <p>Features / Installed Software:</p>
             <input type="checkbox" name="features[]" value="Mic"> Mic<br>

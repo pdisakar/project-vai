@@ -4,7 +4,6 @@ include("db.php");
 
 // --- Part 1: Handle the form submission for UPDATE ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Sanitize all inputs
     $id = intval($_POST['id']);
     $computer_name = $conn->real_escape_string($_POST['computer_name']);
     $brand = $conn->real_escape_string($_POST['brand']);
@@ -19,9 +18,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $headphone = $conn->real_escape_string($_POST['headphone']);
     $features = isset($_POST['features']) ? implode(", ", $_POST['features']) : "";
 
-    // Prepare the UPDATE query
-    $stmt = $conn->prepare("UPDATE computerlist SET computer_name=?, brand=?, processor=?, operating_system=?, ram=?, storage=?, screen=?, graphics=?, keyboard=?, mouse=?, headphone=?, features=? WHERE id=?");
-    $stmt->bind_param("ssssssssssssi", $computer_name, $brand, $processor, $operating_system, $ram, $storage, $screen, $graphics, $keyboard, $mouse, $headphone, $features, $id);
+    // --- Handle image upload ---
+    $image_name = $_POST['existing_image'] ?? ''; // keep existing image by default
+    if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
+        $target_dir = "uploads/";
+        $image_name = time() . "_" . basename($_FILES["image"]["name"]);
+        $target_file = $target_dir . $image_name;
+        $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+        $allowed_types = ['jpg', 'jpeg', 'png', 'gif'];
+
+        if (in_array($imageFileType, $allowed_types)) {
+            move_uploaded_file($_FILES["image"]["tmp_name"], $target_file);
+        } else {
+            echo "<script>alert('Invalid image format! Only JPG, PNG, GIF allowed.');</script>";
+        }
+    }
+
+    $stmt = $conn->prepare("UPDATE computerlist SET computer_name=?, brand=?, processor=?, operating_system=?, ram=?, storage=?, screen=?, graphics=?, keyboard=?, mouse=?, headphone=?, features=?, image=? WHERE id=?");
+    $stmt->bind_param("sssssssssssssi", $computer_name, $brand, $processor, $operating_system, $ram, $storage, $screen, $graphics, $keyboard, $mouse, $headphone, $features, $image_name, $id);
 
     if ($stmt->execute()) {
         echo "<script>alert('Computer updated successfully!'); window.location='computers.php';</script>";
@@ -32,10 +46,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit();
 }
 
-// --- Part 2: Fetch and display the existing data in the form ---
-if (!isset($_GET['id'])) {
-    die("No computer ID provided.");
-}
+// --- Part 2: Fetch existing data ---
+if (!isset($_GET['id'])) die("No computer ID provided.");
 
 $id = intval($_GET['id']);
 $stmt = $conn->prepare("SELECT * FROM computerlist WHERE id = ?");
@@ -43,12 +55,9 @@ $stmt->bind_param("i", $id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-if ($result->num_rows !== 1) {
-    die("Computer not found.");
-}
+if ($result->num_rows !== 1) die("Computer not found.");
 
 $computer = $result->fetch_assoc();
-// Convert the features string into an array to pre-check the boxes
 $selected_features = explode(', ', $computer['features']);
 $stmt->close();
 ?>
@@ -56,19 +65,19 @@ $stmt->close();
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="globalstyle.css">
-    <title>Edit Computer</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="globalstyle.css">
+<title>Edit Computer</title>
 </head>
 <body>
 <div class="common-box">
     <?php include("sidebar.php"); ?>
     <div class="container">
         <h2>Edit Computer</h2>
-        <form method="POST" action="">
-            <!-- Hidden input to store the ID is crucial for the update query -->
+        <form method="POST" action="" enctype="multipart/form-data">
             <input type="hidden" name="id" value="<?= htmlspecialchars($computer['id']) ?>">
+            <input type="hidden" name="existing_image" value="<?= htmlspecialchars($computer['image']) ?>">
 
             <label>Computer Name:</label>
             <input type="text" name="computer_name" required value="<?= htmlspecialchars($computer['computer_name']) ?>"><br><br>
@@ -103,15 +112,22 @@ $stmt->close();
             <label>Headphone:</label>
             <input type="text" name="headphone" required value="<?= htmlspecialchars($computer['headphone']) ?>"><br><br>
 
-            <p>Features / Installed Software:</p>
-            <input type="checkbox" name="features[]" value="Mic" <?= in_array('Mic', $selected_features) ? 'checked' : '' ?>> Mic<br>
-            <input type="checkbox" name="features[]" value="Discord" <?= in_array('Discord', $selected_features) ? 'checked' : '' ?>> Discord<br>
-            <input type="checkbox" name="features[]" value="Steam" <?= in_array('Steam', $selected_features) ? 'checked' : '' ?>> Steam<br>
-            <input type="checkbox" name="features[]" value="Epic Games" <?= in_array('Epic Games', $selected_features) ? 'checked' : '' ?>> Epic Games<br>
-            <input type="checkbox" name="features[]" value="Team Speak" <?= in_array('Team Speak', $selected_features) ? 'checked' : '' ?>> Team Speak<br>
-            <input type="checkbox" name="features[]" value="Google Chrome" <?= in_array('Google Chrome', $selected_features) ? 'checked' : '' ?>> Google Chrome<br>
-            <input type="checkbox" name="features[]" value="Firefox" <?= in_array('Firefox', $selected_features) ? 'checked' : '' ?>> Firefox<br><br>
+            <label>Image:</label><br>
+            <?php if(!empty($computer['image'])): ?>
+                <img src="public/images/<?= htmlspecialchars($computer['image']) ?>" alt="Computer Image" width="150"><br>
+                <small>Upload a new image to replace the current one.</small><br>
+            <?php endif; ?>
+            <input type="file" name="image" accept="image/*"><br><br>
 
+            <p>Features / Installed Software:</p>
+            <?php
+            $all_features = ['Mic', 'Discord', 'Steam', 'Epic Games', 'Team Speak', 'Google Chrome', 'Firefox'];
+            foreach ($all_features as $feature) {
+                $checked = in_array($feature, $selected_features) ? 'checked' : '';
+                echo "<input type='checkbox' name='features[]' value='$feature' $checked> $feature<br>";
+            }
+            ?>
+            <br>
             <button type="submit">Update Computer</button>
         </form>
     </div>

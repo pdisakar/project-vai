@@ -24,6 +24,9 @@ ol {
   --color-muted: #525252;
   --color-hover-color: #dfdbdb;
   --color-page-bg: #f3f3f3;
+  --color-border: #d0cfcf;
+  --color-muted-blue: #8079f9;
+  --color-muted-red: #ee6161;
 }
 
 body {
@@ -125,6 +128,40 @@ body {
 
     li {
       margin: 3px 0;
+    }
+  }
+}
+
+.grid-cols {
+  .grid-item {
+    border: var(--color-border) solid 1px;
+    border-radius: 4px;
+    padding: 12px 24px 24px 24px;
+    background-color: var(--color-page-bg);
+    font-size: 14px;
+    .title {
+      font-weight: 600;
+    }
+    .item-title {
+      font-size: 20px;
+      font-weight: 600;
+    }
+    .quick-actions {
+      margin-top: 24px;
+    }
+    .edit {
+      width: fit-content;
+      padding: 4px 16px;
+      background-color: var(--color-muted-blue);
+      color: var(--color-white);
+      border-radius: 8px;
+    }
+    .delete {
+      width: fit-content;
+      padding: 4px 16px;
+      background-color: var(--color-muted-red);
+      color: var(--color-white);
+      border-radius: 8px;
     }
   }
 }

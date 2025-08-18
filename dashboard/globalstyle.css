@@ -23,6 +23,9 @@ ol {
   --color-muted: #525252;
   --color-hover-color: #dfdbdb;
   --color-page-bg: #f3f3f3;
+  --color-border: #d0cfcf;
+  --color-muted-blue: #8079f9;
+  --color-muted-red: #ee6161;
 }
 
 body {
@@ -117,4 +120,38 @@ body {
 }
 .sidebar .submenu li {
   margin: 3px 0;
+}
+
+.grid-cols .grid-item {
+  border: var(--color-border) solid 1px;
+  border-radius: 4px;
+  padding: 12px 24px 24px 24px;
+  background-color: var(--color-page-bg);
+  font-size: 14px;
+}
+.grid-cols .grid-item .title {
+  font-weight: 600;
+}
+.grid-cols .grid-item .item-title {
+  font-size: 20px;
+  font-weight: 600;
+}
+.grid-cols .grid-item .quick-actions {
+  margin-top: 24px;
+}
+.grid-cols .grid-item .edit {
+  width: -moz-fit-content;
+  width: fit-content;
+  padding: 4px 16px;
+  background-color: var(--color-muted-blue);
+  color: var(--color-white);
+  border-radius: 8px;
+}
+.grid-cols .grid-item .delete {
+  width: -moz-fit-content;
+  width: fit-content;
+  padding: 4px 16px;
+  background-color: var(--color-muted-red);
+  color: var(--color-white);
+  border-radius: 8px;
 }/*# sourceMappingURL=globalstyle.css.map */

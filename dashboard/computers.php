@@ -2,41 +2,50 @@
 session_start();
 include("db.php");
 
-// Handle deletion
+// Handle deletion (soft delete)
 if (isset($_GET['delete'])) {
     $id = intval($_GET['delete']);
 
-    // Move to deletedcomputers
-    $stmt = $conn->prepare("
-        INSERT INTO deletedcomputers (computer_name, brand, processor, operating_system, ram, storage, screen, graphics, keyboard, mouse, headphone, features)
-        SELECT computer_name, brand, processor, operating_system, ram, storage, screen, graphics, keyboard, mouse, headphone, features
-        FROM computerlist WHERE id = ?
-    ");
-    $stmt->bind_param("i", $id);
-    if (!$stmt->execute()) die("Error moving to deletedcomputers: ".$stmt->error);
-    $stmt->close();
+    // Use a transaction to ensure data integrity
+    $conn->begin_transaction();
+    try {
+        // Copy the record to the deletedcomputers table
+        $stmt_copy = $conn->prepare("
+            INSERT INTO deletedcomputers (computer_name, brand, processor, operating_system, ram, storage, screen, graphics, keyboard, mouse, headphone, features)
+            SELECT computer_name, brand, processor, operating_system, ram, storage, screen, graphics, keyboard, mouse, headphone, features
+            FROM computerlist WHERE id = ?
+        ");
+        $stmt_copy->bind_param("i", $id);
+        $stmt_copy->execute();
+        $stmt_copy->close();
 
-    // Delete from computerlist
-    $stmt = $conn->prepare("DELETE FROM computerlist WHERE id = ?");
-    $stmt->bind_param("i", $id);
-    if (!$stmt->execute()) die("Error deleting computer: ".$stmt->error);
-    $stmt->close();
+        // Delete the record from the main computerlist table
+        $stmt_delete = $conn->prepare("DELETE FROM computerlist WHERE id = ?");
+        $stmt_delete->bind_param("i", $id);
+        $stmt_delete->execute();
+        $stmt_delete->close();
 
-    echo "<script>alert('Computer deleted successfully!'); window.location='computers.php';</script>";
+        $conn->commit();
+        echo "<script>alert('Computer moved to trash successfully!'); window.location='computers.php';</script>";
+
+    } catch (mysqli_sql_exception $exception) {
+        $conn->rollback();
+        die("Error during deletion process: " . $exception->getMessage());
+    }
     exit();
 }
 
-// Fetch all computers
-$result = $conn->query("SELECT * FROM computerlist");
+// Fetch all computers from the main list
+$result = $conn->query("SELECT * FROM computerlist ORDER BY id DESC");
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="globalstyle.css">
-<title>Computer List</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="globalstyle.css">
+    <title>Computer List</title>
 </head>
 <body>
 <div class="common-box">
@@ -49,7 +58,7 @@ $result = $conn->query("SELECT * FROM computerlist");
                 <th>Storage</th><th>Screen</th><th>Graphics</th><th>Keyboard</th><th>Mouse</th>
                 <th>Headphone</th><th>Features</th><th>Actions</th>
             </tr>
-            <?php if ($result->num_rows > 0): ?>
+            <?php if ($result && $result->num_rows > 0): ?>
                 <?php while($row = $result->fetch_assoc()): ?>
                 <tr>
                     <td><?= $row['id'] ?></td>
@@ -66,8 +75,9 @@ $result = $conn->query("SELECT * FROM computerlist");
                     <td><?= htmlspecialchars($row['headphone']) ?></td>
                     <td><?= htmlspecialchars($row['features']) ?></td>
                     <td>
-                        <a href="computersedit.php?id=<?= $row['id'] ?>">Edit</a> |
-                        <a href="computers.php?delete=<?= $row['id'] ?>" onclick="return confirm('Are you sure?')">Delete</a>
+                        <!-- THIS IS THE ONLY CHANGE NEEDED IN THIS FILE -->
+                        <a href="computeredit.php?id=<?= $row['id'] ?>">Edit</a> |
+                        <a href="computers.php?delete=<?= $row['id'] ?>" onclick="return confirm('Are you sure you want to move this computer to the trash?')">Delete</a>
                     </td>
                 </tr>
                 <?php endwhile; ?>

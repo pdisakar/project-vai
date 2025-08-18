@@ -2,14 +2,11 @@
 session_start();
 include("db.php");
 
-// Restore a computer
 if (isset($_GET['restore'])) {
     $id = intval($_GET['restore']);
 
-    // Use a transaction to ensure both queries succeed or neither do
     $conn->begin_transaction();
     try {
-        // Copy the record back to the main computerlist table
         $stmt_copy = $conn->prepare("
             INSERT INTO computerlist (computer_name, brand, processor, operating_system, ram, storage, screen, graphics, keyboard, mouse, headphone, features)
             SELECT computer_name, brand, processor, operating_system, ram, storage, screen, graphics, keyboard, mouse, headphone, features
@@ -19,25 +16,21 @@ if (isset($_GET['restore'])) {
         $stmt_copy->execute();
         $stmt_copy->close();
 
-        // Now, delete the record from the deletedcomputers table
         $stmt_delete = $conn->prepare("DELETE FROM deletedcomputers WHERE id = ?");
         $stmt_delete->bind_param("i", $id);
         $stmt_delete->execute();
         $stmt_delete->close();
 
-        // If all queries were successful, commit the transaction
         $conn->commit();
         echo "<script>alert('Computer restored successfully!'); window.location='computerdeleted.php';</script>";
 
     } catch (mysqli_sql_exception $exception) {
-        // If any query fails, rollback the entire transaction
         $conn->rollback();
         die("Error during restore process: " . $exception->getMessage());
     }
     exit();
 }
 
-// Permanently delete a computer
 if (isset($_GET['permadelete'])) {
     $id = intval($_GET['permadelete']);
     $stmt = $conn->prepare("DELETE FROM deletedcomputers WHERE id = ?");
@@ -52,7 +45,6 @@ if (isset($_GET['permadelete'])) {
     exit();
 }
 
-// Fetch all deleted computers to display on the page
 $result = $conn->query("SELECT * FROM deletedcomputers ORDER BY deleted_at DESC");
 ?>
 
@@ -73,7 +65,7 @@ $result = $conn->query("SELECT * FROM deletedcomputers ORDER BY deleted_at DESC"
             <tr>
                 <th>ID</th><th>Name</th><th>Brand</th><th>Processor</th><th>OS</th><th>RAM</th>
                 <th>Storage</th><th>Screen</th><th>Graphics</th><th>Keyboard</th><th>Mouse</th>
-                <th>Headphone</th><th>Features</th><th>Deleted At</th><th>Actions</th>
+                <th>Headphone</th><th>Features</th><th>Actions</th>
             </tr>
             <?php if ($result && $result->num_rows > 0): ?>
                 <?php while($row = $result->fetch_assoc()): ?>
@@ -91,7 +83,6 @@ $result = $conn->query("SELECT * FROM deletedcomputers ORDER BY deleted_at DESC"
                     <td><?= htmlspecialchars($row['mouse']) ?></td>
                     <td><?= htmlspecialchars($row['headphone']) ?></td>
                     <td><?= htmlspecialchars($row['features']) ?></td>
-                    <td><?= $row['deleted_at'] ?></td>
                     <td>
                         <a href="computerdeleted.php?restore=<?= $row['id'] ?>" onclick="return confirm('Restore this computer?')">Restore</a> |
                         <a href="computerdeleted.php?permadelete=<?= $row['id'] ?>" onclick="return confirm('Permanently delete this computer? This cannot be undone.')">Delete Permanently</a>
@@ -99,7 +90,7 @@ $result = $conn->query("SELECT * FROM deletedcomputers ORDER BY deleted_at DESC"
                 </tr>
                 <?php endwhile; ?>
             <?php else: ?>
-                <tr><td colspan="15">No deleted computers found.</td></tr>
+                <tr><td colspan="14">No deleted computers found.</td></tr>
             <?php endif; ?>
         </table>
     </div>

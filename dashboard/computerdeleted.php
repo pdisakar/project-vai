@@ -2,11 +2,13 @@
 session_start();
 include("db.php");
 
+// Restore a computer from trash
 if (isset($_GET['restore'])) {
     $id = intval($_GET['restore']);
 
     $conn->begin_transaction();
     try {
+        // Copy record back to main table
         $stmt_copy = $conn->prepare("
             INSERT INTO computerlist (computer_name, brand, processor, operating_system, ram, storage, screen, graphics, keyboard, mouse, headphone, features)
             SELECT computer_name, brand, processor, operating_system, ram, storage, screen, graphics, keyboard, mouse, headphone, features
@@ -16,6 +18,7 @@ if (isset($_GET['restore'])) {
         $stmt_copy->execute();
         $stmt_copy->close();
 
+        // Delete from deletedcomputers
         $stmt_delete = $conn->prepare("DELETE FROM deletedcomputers WHERE id = ?");
         $stmt_delete->bind_param("i", $id);
         $stmt_delete->execute();
@@ -23,7 +26,6 @@ if (isset($_GET['restore'])) {
 
         $conn->commit();
         echo "<script>alert('Computer restored successfully!'); window.location='computerdeleted.php';</script>";
-
     } catch (mysqli_sql_exception $exception) {
         $conn->rollback();
         die("Error during restore process: " . $exception->getMessage());
@@ -31,6 +33,7 @@ if (isset($_GET['restore'])) {
     exit();
 }
 
+// Permanently delete a computer
 if (isset($_GET['permadelete'])) {
     $id = intval($_GET['permadelete']);
     $stmt = $conn->prepare("DELETE FROM deletedcomputers WHERE id = ?");
@@ -45,6 +48,7 @@ if (isset($_GET['permadelete'])) {
     exit();
 }
 
+// Fetch all deleted computers
 $result = $conn->query("SELECT * FROM deletedcomputers ORDER BY deleted_at DESC");
 ?>
 
@@ -63,14 +67,15 @@ $result = $conn->query("SELECT * FROM deletedcomputers ORDER BY deleted_at DESC"
         <h2>Deleted Computers (Trash)</h2>
         <table border="1" cellpadding="8" cellspacing="0">
             <tr>
-                <th>ID</th><th>Name</th><th>Brand</th><th>Processor</th><th>OS</th><th>RAM</th>
+                <th>#</th><th>Name</th><th>Brand</th><th>Processor</th><th>OS</th><th>RAM</th>
                 <th>Storage</th><th>Screen</th><th>Graphics</th><th>Keyboard</th><th>Mouse</th>
                 <th>Headphone</th><th>Features</th><th>Actions</th>
             </tr>
             <?php if ($result && $result->num_rows > 0): ?>
+                <?php $counter = 1; ?>
                 <?php while($row = $result->fetch_assoc()): ?>
                 <tr>
-                    <td><?= $row['id'] ?></td>
+                    <td><?= $counter++ ?></td>
                     <td><?= htmlspecialchars($row['computer_name']) ?></td>
                     <td><?= htmlspecialchars($row['brand']) ?></td>
                     <td><?= htmlspecialchars($row['processor']) ?></td>

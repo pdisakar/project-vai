@@ -54,14 +54,15 @@ $result = $conn->query("SELECT * FROM computerlist ORDER BY id DESC");
         <h2>Computer List</h2>
         <table border="1" cellpadding="8" cellspacing="0">
             <tr>
-                <th>ID</th><th>Name</th><th>Brand</th><th>Processor</th><th>OS</th><th>RAM</th>
+                <th>#</th><th>Name</th><th>Brand</th><th>Processor</th><th>OS</th><th>RAM</th>
                 <th>Storage</th><th>Screen</th><th>Graphics</th><th>Keyboard</th><th>Mouse</th>
                 <th>Headphone</th><th>Features</th><th>Actions</th>
             </tr>
             <?php if ($result && $result->num_rows > 0): ?>
+                <?php $counter = 1; ?>
                 <?php while($row = $result->fetch_assoc()): ?>
                 <tr>
-                    <td><?= $row['id'] ?></td>
+                    <td><?= $counter++ ?></td>
                     <td><?= htmlspecialchars($row['computer_name']) ?></td>
                     <td><?= htmlspecialchars($row['brand']) ?></td>
                     <td><?= htmlspecialchars($row['processor']) ?></td>
@@ -75,7 +76,6 @@ $result = $conn->query("SELECT * FROM computerlist ORDER BY id DESC");
                     <td><?= htmlspecialchars($row['headphone']) ?></td>
                     <td><?= htmlspecialchars($row['features']) ?></td>
                     <td>
-                        <!-- THIS IS THE ONLY CHANGE NEEDED IN THIS FILE -->
                         <a href="computeredit.php?id=<?= $row['id'] ?>">Edit</a> |
                         <a href="computers.php?delete=<?= $row['id'] ?>" onclick="return confirm('Are you sure you want to move this computer to the trash?')">Delete</a>
                     </td>

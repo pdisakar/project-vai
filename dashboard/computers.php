@@ -1,7 +1,6 @@
 <?php include("../auth.php"); ?>
 
 <?php
-session_start();
 include("db.php");
 
 if (isset($_GET['delete'])) {
@@ -54,8 +53,6 @@ $result = $conn->query("SELECT * FROM computerlist ORDER BY id DESC");
                 <div class="grid-cols">
                     <?php while ($row = $result->fetch_assoc()): ?>
                         <div class="grid-item">
-
-                            <!-- Removed image completely -->
 
                             <p class="item-title"><?= htmlspecialchars($row['computer_name']) ?></p>
                             <p><span class="title">Brand:</span> <?= htmlspecialchars($row['brand']) ?></p>

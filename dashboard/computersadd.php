@@ -1,7 +1,6 @@
 <?php include("../auth.php"); ?>
 
 <?php
-session_start();
 include("db.php");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -18,7 +17,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $headphone = $conn->real_escape_string($_POST['headphone']);
     $features = isset($_POST['features']) ? implode(", ", $_POST['features']) : "";
 
-    // ✅ Removed image handling
     $stmt = $conn->prepare(
         "INSERT INTO computerlist 
         (computer_name, brand, processor, operating_system, ram, storage, screen, graphics, keyboard, mouse, headphone, features) 
@@ -64,7 +62,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php include("sidebar.php"); ?>
         <div class="container">
             <h2>Add Computer</h2>
-            <!-- ✅ Removed enctype since no file upload -->
             <form method="POST" action="">
                 <label>Computer Name:</label>
                 <input type="text" name="computer_name" required><br><br>
@@ -98,8 +95,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <label>Headphone:</label>
                 <input type="text" name="headphone" required><br><br>
-
-                <!-- ✅ Removed Image Upload Field -->
 
                 <p>Features / Installed Software:</p>
                 <input type="checkbox" name="features[]" value="Mic"> Mic<br>

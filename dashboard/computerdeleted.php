@@ -1,16 +1,13 @@
 <?php include("../auth.php"); ?>
 
 <?php
-session_start();
 include("db.php");
 
-// Restore a computer from trash
 if (isset($_GET['restore'])) {
     $id = intval($_GET['restore']);
 
     $conn->begin_transaction();
     try {
-        // Copy record back to main table
         $stmt_copy = $conn->prepare("
             INSERT INTO computerlist (computer_name, brand, processor, operating_system, ram, storage, screen, graphics, keyboard, mouse, headphone, features)
             SELECT computer_name, brand, processor, operating_system, ram, storage, screen, graphics, keyboard, mouse, headphone, features
@@ -20,7 +17,6 @@ if (isset($_GET['restore'])) {
         $stmt_copy->execute();
         $stmt_copy->close();
 
-        // Delete from deletedcomputers
         $stmt_delete = $conn->prepare("DELETE FROM deletedcomputers WHERE id = ?");
         $stmt_delete->bind_param("i", $id);
         $stmt_delete->execute();
@@ -35,7 +31,6 @@ if (isset($_GET['restore'])) {
     exit();
 }
 
-// Permanently delete a computer
 if (isset($_GET['permadelete'])) {
     $id = intval($_GET['permadelete']);
     $stmt = $conn->prepare("DELETE FROM deletedcomputers WHERE id = ?");
@@ -50,7 +45,6 @@ if (isset($_GET['permadelete'])) {
     exit();
 }
 
-// Fetch all deleted computers
 $result = $conn->query("SELECT * FROM deletedcomputers ORDER BY deleted_at DESC");
 ?>
 

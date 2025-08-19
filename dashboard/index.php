@@ -24,14 +24,3 @@
 </body>
 
 </html>
-
-<!-- <body>
-    <div class="common-box">
-
-        <?php include("sidebar.php"); ?>
-        <div class="container">
-
-            deleted computer list
-        </div>
-    </div>
-</body> -->

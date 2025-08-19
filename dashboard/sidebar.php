@@ -1,9 +1,9 @@
   <div class="sidebar">
       <div class="sidebar-header">
           <span class="logo">💻</span>
-          <div class="title"> 
-            <div class="main-title">Cyber Cafe</div>
-            <div class="sub-title">Management Systam</div>
+          <div class="title">
+              <div class="main-title">Cyber Cafe</div>
+              <div class="sub-title">Management Systam</div>
           </div>
       </div>
 
@@ -11,11 +11,11 @@
           <p class="section-title">Platform</p>
           <ul class="menu">
               <li><a href="index.php">
-              <img src='./public/svg/dashboard.svg' alt='Dashboard Icon' class='icon' width="14" height="14"/> 
-              Dashboard</a></li>
+                      <img src='./public/svg/dashboard.svg' alt='Dashboard Icon' class='icon' width="14" height="14" />
+                      Dashboard</a></li>
               <li class="has-submenu">
-                  <span class="submenu-toggle"><img src='./public/svg/computers.svg' alt='Dashboard Icon' class='icon' width="14" height="14"/> 
-                    Computers</span>
+                  <span class="submenu-toggle"><img src='./public/svg/computers.svg' alt='Dashboard Icon' class='icon' width="14" height="14" />
+                      Computers</span>
                   <ul class="submenu">
                       <li><a href="./computers.php">List</a></li>
                       <li><a href="./computersadd.php">Add</a></li>
@@ -23,13 +23,11 @@
                   </ul>
 
               </li>
-               <li class="has-submenu">
-                  <span class="submenu-toggle"><img src='./public/svg/users.svg' alt='Dashboard Icon' class='icon' width="14" height="14"/> 
-                    Users</span>
+              <li class="has-submenu">
+                  <span class="submenu-toggle"><img src='./public/svg/users.svg' alt='Dashboard Icon' class='icon' width="14" height="14" />
+                      Users</span>
                   <ul class="submenu">
-                      <li><a href="./computers.php">List</a></li>
-                      <li><a href="./computersadd.php">Add</a></li>
-                      <li><a href="./computerdeleted.php">Deleted</a></li>
+                      <li><a href="./userlist.php">User List</a></li>
                   </ul>
 
               </li>

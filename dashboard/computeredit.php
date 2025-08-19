@@ -1,10 +1,8 @@
 <?php include("../auth.php"); ?>
 
 <?php
-session_start();
 include("db.php");
 
-// --- Part 1: Handle the form submission for UPDATE ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = intval($_POST['id']);
     $computer_name = $conn->real_escape_string($_POST['computer_name']);
@@ -34,7 +32,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit();
 }
 
-// --- Part 2: Fetch existing data ---
 if (!isset($_GET['id'])) die("No computer ID provided.");
 
 $id = intval($_GET['id']);

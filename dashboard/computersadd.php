@@ -1,3 +1,5 @@
+<?php include("../auth.php"); ?>
+
 <?php
 session_start();
 include("db.php");
@@ -16,26 +18,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $headphone = $conn->real_escape_string($_POST['headphone']);
     $features = isset($_POST['features']) ? implode(", ", $_POST['features']) : "";
 
-    // Handle image upload
-    $image_name = "";
-    if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
-        $target_dir = "uploads/"; // Make sure this folder exists and is writable
-        $image_name = time() . "_" . basename($_FILES["image"]["name"]);
-        $target_file = $target_dir . $image_name;
-        $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-
-        // Optional: Validate file type
-        $allowed_types = ['jpg', 'jpeg', 'png', 'gif'];
-        if (in_array($imageFileType, $allowed_types)) {
-            move_uploaded_file($_FILES["image"]["tmp_name"], $target_file);
-        } else {
-            echo "<script>alert('Invalid image format! Only JPG, PNG, GIF allowed.');</script>";
-            $image_name = "";
-        }
-    }
-
-    $stmt = $conn->prepare("INSERT INTO computerlist (computer_name, brand, processor, operating_system, ram, storage, screen, graphics, keyboard, mouse, headphone, features, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssssssssssss", $computer_name, $brand, $processor, $operating_system, $ram, $storage, $screen, $graphics, $keyboard, $mouse, $headphone, $features, $image_name);
+    // ✅ Removed image handling
+    $stmt = $conn->prepare(
+        "INSERT INTO computerlist 
+        (computer_name, brand, processor, operating_system, ram, storage, screen, graphics, keyboard, mouse, headphone, features) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    );
+    $stmt->bind_param(
+        "ssssssssssss",
+        $computer_name,
+        $brand,
+        $processor,
+        $operating_system,
+        $ram,
+        $storage,
+        $screen,
+        $graphics,
+        $keyboard,
+        $mouse,
+        $headphone,
+        $features
+    );
 
     if ($stmt->execute()) {
         echo "<script>alert('Computer added successfully!'); window.location='computers.php';</script>";
@@ -48,66 +51,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="globalstyle.css">
-<title>Add Computer</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="globalstyle.css">
+    <title>Add Computer</title>
 </head>
+
 <body>
-<div class="common-box">
-    <?php include("sidebar.php"); ?>
-    <div class="container">
-        <h2>Add Computer</h2>
-        <form method="POST" action="" enctype="multipart/form-data">
-            <label>Computer Name:</label>
-            <input type="text" name="computer_name" required><br><br>
+    <div class="common-box">
+        <?php include("sidebar.php"); ?>
+        <div class="container">
+            <h2>Add Computer</h2>
+            <!-- ✅ Removed enctype since no file upload -->
+            <form method="POST" action="">
+                <label>Computer Name:</label>
+                <input type="text" name="computer_name" required><br><br>
 
-            <label>Brand:</label>
-            <input type="text" name="brand" required><br><br>
+                <label>Brand:</label>
+                <input type="text" name="brand" required><br><br>
 
-            <label>Processor:</label>
-            <input type="text" name="processor" required><br><br>
+                <label>Processor:</label>
+                <input type="text" name="processor" required><br><br>
 
-            <label>Operating System:</label>
-            <input type="text" name="operating_system" required><br><br>
+                <label>Operating System:</label>
+                <input type="text" name="operating_system" required><br><br>
 
-            <label>RAM:</label>
-            <input type="text" name="ram" required><br><br>
+                <label>RAM:</label>
+                <input type="text" name="ram" required><br><br>
 
-            <label>Storage:</label>
-            <input type="text" name="storage" required><br><br>
+                <label>Storage:</label>
+                <input type="text" name="storage" required><br><br>
 
-            <label>Screen:</label>
-            <input type="text" name="screen" required><br><br>
+                <label>Screen:</label>
+                <input type="text" name="screen" required><br><br>
 
-            <label>Graphics:</label>
-            <input type="text" name="graphics" required><br><br>
+                <label>Graphics:</label>
+                <input type="text" name="graphics" required><br><br>
 
-            <label>Keyboard:</label>
-            <input type="text" name="keyboard" required><br><br>
+                <label>Keyboard:</label>
+                <input type="text" name="keyboard" required><br><br>
 
-            <label>Mouse:</label>
-            <input type="text" name="mouse" required><br><br>
+                <label>Mouse:</label>
+                <input type="text" name="mouse" required><br><br>
 
-            <label>Headphone:</label>
-            <input type="text" name="headphone" required><br><br>
+                <label>Headphone:</label>
+                <input type="text" name="headphone" required><br><br>
 
-            <label>Image:</label>
-            <input type="file" name="image" accept="image/*"><br><br>
+                <!-- ✅ Removed Image Upload Field -->
 
-            <p>Features / Installed Software:</p>
-            <input type="checkbox" name="features[]" value="Mic"> Mic<br>
-            <input type="checkbox" name="features[]" value="Discord"> Discord<br>
-            <input type="checkbox" name="features[]" value="Steam"> Steam<br>
-            <input type="checkbox" name="features[]" value="Epic Games"> Epic Games<br>
-            <input type="checkbox" name="features[]" value="Team Speak"> Team Speak<br>
-            <input type="checkbox" name="features[]" value="Google Chrome"> Google Chrome<br>
-            <input type="checkbox" name="features[]" value="Firefox"> Firefox<br><br>
+                <p>Features / Installed Software:</p>
+                <input type="checkbox" name="features[]" value="Mic"> Mic<br>
+                <input type="checkbox" name="features[]" value="Discord"> Discord<br>
+                <input type="checkbox" name="features[]" value="Steam"> Steam<br>
+                <input type="checkbox" name="features[]" value="Epic Games"> Epic Games<br>
+                <input type="checkbox" name="features[]" value="Team Speak"> Team Speak<br>
+                <input type="checkbox" name="features[]" value="Google Chrome"> Google Chrome<br>
+                <input type="checkbox" name="features[]" value="Firefox"> Firefox<br><br>
 
-            <button type="submit">Add Computer</button>
-        </form>
+                <button type="submit">Add Computer</button>
+            </form>
+        </div>
     </div>
-</div>
 </body>
+
 </html>

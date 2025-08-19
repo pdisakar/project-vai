@@ -1,3 +1,5 @@
+<?php include("../auth.php"); ?>
+
 <?php
 session_start();
 include("db.php");
@@ -54,51 +56,67 @@ $result = $conn->query("SELECT * FROM deletedcomputers ORDER BY deleted_at DESC"
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="globalstyle.css">
     <title>Deleted Computers</title>
 </head>
+
 <body>
-<div class="common-box">
-    <?php include("sidebar.php"); ?>
-    <div class="container">
-        <h2>Deleted Computers (Trash)</h2>
-        <table border="1" cellpadding="8" cellspacing="0">
-            <tr>
-                <th>#</th><th>Name</th><th>Brand</th><th>Processor</th><th>OS</th><th>RAM</th>
-                <th>Storage</th><th>Screen</th><th>Graphics</th><th>Keyboard</th><th>Mouse</th>
-                <th>Headphone</th><th>Features</th><th>Actions</th>
-            </tr>
-            <?php if ($result && $result->num_rows > 0): ?>
-                <?php $counter = 1; ?>
-                <?php while($row = $result->fetch_assoc()): ?>
+    <div class="common-box">
+        <?php include("sidebar.php"); ?>
+        <div class="container">
+            <h2>Deleted Computers (Trash)</h2>
+            <table border="1" cellpadding="8" cellspacing="0">
                 <tr>
-                    <td><?= $counter++ ?></td>
-                    <td><?= htmlspecialchars($row['computer_name']) ?></td>
-                    <td><?= htmlspecialchars($row['brand']) ?></td>
-                    <td><?= htmlspecialchars($row['processor']) ?></td>
-                    <td><?= htmlspecialchars($row['operating_system']) ?></td>
-                    <td><?= htmlspecialchars($row['ram']) ?></td>
-                    <td><?= htmlspecialchars($row['storage']) ?></td>
-                    <td><?= htmlspecialchars($row['screen']) ?></td>
-                    <td><?= htmlspecialchars($row['graphics']) ?></td>
-                    <td><?= htmlspecialchars($row['keyboard']) ?></td>
-                    <td><?= htmlspecialchars($row['mouse']) ?></td>
-                    <td><?= htmlspecialchars($row['headphone']) ?></td>
-                    <td><?= htmlspecialchars($row['features']) ?></td>
-                    <td>
-                        <a href="computerdeleted.php?restore=<?= $row['id'] ?>" onclick="return confirm('Restore this computer?')">Restore</a> |
-                        <a href="computerdeleted.php?permadelete=<?= $row['id'] ?>" onclick="return confirm('Permanently delete this computer? This cannot be undone.')">Delete Permanently</a>
-                    </td>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Brand</th>
+                    <th>Processor</th>
+                    <th>OS</th>
+                    <th>RAM</th>
+                    <th>Storage</th>
+                    <th>Screen</th>
+                    <th>Graphics</th>
+                    <th>Keyboard</th>
+                    <th>Mouse</th>
+                    <th>Headphone</th>
+                    <th>Features</th>
+                    <th>Actions</th>
                 </tr>
-                <?php endwhile; ?>
-            <?php else: ?>
-                <tr><td colspan="14">No deleted computers found.</td></tr>
-            <?php endif; ?>
-        </table>
+                <?php if ($result && $result->num_rows > 0): ?>
+                    <?php $counter = 1; ?>
+                    <?php while ($row = $result->fetch_assoc()): ?>
+                        <tr>
+                            <td><?= $counter++ ?></td>
+                            <td><?= htmlspecialchars($row['computer_name']) ?></td>
+                            <td><?= htmlspecialchars($row['brand']) ?></td>
+                            <td><?= htmlspecialchars($row['processor']) ?></td>
+                            <td><?= htmlspecialchars($row['operating_system']) ?></td>
+                            <td><?= htmlspecialchars($row['ram']) ?></td>
+                            <td><?= htmlspecialchars($row['storage']) ?></td>
+                            <td><?= htmlspecialchars($row['screen']) ?></td>
+                            <td><?= htmlspecialchars($row['graphics']) ?></td>
+                            <td><?= htmlspecialchars($row['keyboard']) ?></td>
+                            <td><?= htmlspecialchars($row['mouse']) ?></td>
+                            <td><?= htmlspecialchars($row['headphone']) ?></td>
+                            <td><?= htmlspecialchars($row['features']) ?></td>
+                            <td>
+                                <a href="computerdeleted.php?restore=<?= $row['id'] ?>" onclick="return confirm('Restore this computer?')">Restore</a> |
+                                <a href="computerdeleted.php?permadelete=<?= $row['id'] ?>" onclick="return confirm('Permanently delete this computer? This cannot be undone.')">Delete Permanently</a>
+                            </td>
+                        </tr>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="14">No deleted computers found.</td>
+                    </tr>
+                <?php endif; ?>
+            </table>
+        </div>
     </div>
-</div>
 </body>
+
 </html>

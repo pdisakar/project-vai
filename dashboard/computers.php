@@ -1,3 +1,5 @@
+<?php include("../auth.php"); ?>
+
 <?php
 session_start();
 include("db.php");
@@ -50,13 +52,10 @@ $result = $conn->query("SELECT * FROM computerlist ORDER BY id DESC");
             <h2>Computer List</h2>
             <?php if ($result && $result->num_rows > 0): ?>
                 <div class="grid-cols">
-                    <?php $counter = 1; ?>
                     <?php while ($row = $result->fetch_assoc()): ?>
                         <div class="grid-item">
 
-                            <?php if (!empty($row['image']) && file_exists("uploads/" . $row['image'])): ?>
-                                <img src="uploads/<?= htmlspecialchars($row['image']) ?>" alt="<?= htmlspecialchars($row['computer_name']) ?>">
-                            <?php endif; ?>
+                            <!-- Removed image completely -->
 
                             <p class="item-title"><?= htmlspecialchars($row['computer_name']) ?></p>
                             <p><span class="title">Brand:</span> <?= htmlspecialchars($row['brand']) ?></p>
@@ -75,11 +74,8 @@ $result = $conn->query("SELECT * FROM computerlist ORDER BY id DESC");
                                 <a class="delete" href="computers.php?delete=<?= $row['id'] ?>" onclick="return confirm('Move to trash?')">Delete</a>
                             </div>
                         </div>
-
                     <?php endwhile; ?>
                 </div>
-
-
             <?php else: ?>
                 <p>No computers found.</p>
             <?php endif; ?>

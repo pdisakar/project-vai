@@ -16,23 +16,16 @@ $result = $conn->query($sql);
     <h1>Available Computers</h1>
 
     <div class="my-grid">
-        <?php while ($row = $result->fetch_assoc()) { ?>
+        <?php while ($row = $result->fetch_assoc()) {
+            // Create a URL-friendly slug from the computer name
+            $slug = strtolower(preg_replace('/[^A-Za-z0-9-]+/', '-', $row['computer_name']));
+        ?>
             <div class="grid-item">
-                <h3><?php echo $row['id'] . ". " . htmlspecialchars($row['computer_name']); ?></h3>
-                <p><strong>Brand:</strong> <?php echo htmlspecialchars($row['brand']); ?></p>
-                <p><strong>Processor:</strong> <?php echo htmlspecialchars($row['processor']); ?></p>
-                <p><strong>OS:</strong> <?php echo htmlspecialchars($row['operating_system']); ?></p>
-                <p><strong>RAM:</strong> <?php echo htmlspecialchars($row['ram']); ?></p>
-                <p><strong>Storage:</strong> <?php echo htmlspecialchars($row['storage']); ?></p>
-                <p><strong>Screen:</strong> <?php echo htmlspecialchars($row['screen']); ?></p>
-                <p><strong>Graphics:</strong> <?php echo htmlspecialchars($row['graphics']); ?></p>
-                <p><strong>Keyboard:</strong> <?php echo htmlspecialchars($row['keyboard']); ?></p>
-                <p><strong>Mouse:</strong> <?php echo htmlspecialchars($row['mouse']); ?></p>
-                <p><strong>Headphone:</strong> <?php echo htmlspecialchars($row['headphone']); ?></p>
-                <p><strong>Features:</strong> <?php echo htmlspecialchars($row['features']); ?></p>
-                <?php if (!empty($row['image'])): ?>
-                    <img src="dashboard/public/uploads/<?php echo $row['image']; ?>" width="150" alt="Computer Image">
-                <?php endif; ?>
+                <h3>
+                    <a href="computerdetails.php?name=<?php echo urlencode($slug); ?>">
+                        <?php echo htmlspecialchars($row['computer_name']); ?>
+                    </a>
+                </h3>
             </div>
         <?php } ?>
     </div>
